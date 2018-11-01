@@ -1,3 +1,15 @@
+# Create resolv.conf file utilizing the template/dns.erb
+# The resolv.conf has basically 3 parts:
+#  nameservers
+#  domains
+#  options
+#
+# If specified, each of these should be an array of strings
+# None of them are actually required.  See resolv.conf(5)
+#
+# For simplicity, this implementation always uses the 
+# "search" keyword with the values for "domains"
+
 class system::network::dns (
   $config = undef,
 ) {
@@ -9,9 +21,9 @@ class system::network::dns (
     $_config = hiera_hash('system::network::dns', undef)
   }
   if $_config {
-    $domains     = $_config['domains']
-    $nameservers = $_config['nameservers']
-    $options     = $_config['options']
+    $domains     = pick($_config['domains'],[])
+    $nameservers = pick($_config['nameservers'],[])
+    $options     = pick($_config['options'],[])
     validate_array($domains)
     validate_array($nameservers)
     validate_array($options)
